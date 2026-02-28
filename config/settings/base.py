@@ -39,6 +39,7 @@ LOCAL_APPS = [
     'apps.notifications',
     'apps.reports',
     'apps.dashboard',
+    'drf_spectacular',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -133,3 +134,38 @@ PAYSTACK_SECRET_KEY = env('PAYSTACK_SECRET_KEY', default='')
 # SMS
 SMS_API_KEY = env('SMS_API_KEY', default='')
 SMS_SENDER_ID = env('SMS_SENDER_ID', default='Ilimi')
+# REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'apps.core.renderers.IlimiAPIRenderer',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'EXCEPTION_HANDLER': 'apps.core.exceptions.ilimi_exception_handler',
+}
+
+# JWT
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+# API Docs
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Ilimi API',
+    'DESCRIPTION': 'School Management Platform API for West Africa',
+    'VERSION': 'v1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+# SMS
+SMS_BACKEND = 'apps.notifications.backends.console.ConsoleSMSBackend'
