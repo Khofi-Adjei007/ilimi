@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Setup — Ilimi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+        :root { --navy: #1a2946; --navy-light: #2e4a72; --gold: #e8a021; }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #eef0f4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+        }
+
+        .registration-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(26,41,70,0.12);
+            width: 100%;
+            max-width: 1000px;
+            min-height: 620px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            background: var(--navy);
+            padding: 36px 32px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -80px; right: -80px;
+            width: 240px; height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(232,160,33,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; margin-bottom: 40px; }
+        .brand img { width: 38px; height: 38px; object-fit: contain; }
+        .brand-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; }
+        .steps { position: relative; z-index: 1; flex: 1; }
+        .step-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 6px; }
+        .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .step-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .step-icon.done { background: rgba(232,160,33,0.2); }
+        .step-icon.active { background: var(--gold); }
+        .step-icon svg { width: 16px; height: 16px; }
+        .step-line { width: 1.5px; height: 28px; background: rgba(255,255,255,0.08); margin: 4px 0; }
+        .step-text { padding-top: 6px; }
+        .step-title { font-size: 13px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
+        .step-title.done { color: rgba(255,255,255,0.5); }
+        .step-title.active { color: #fff; }
+        .step-desc { font-size: 11px; line-height: 1.4; }
+        .step-desc.done { color: rgba(255,255,255,0.3); }
+        .step-desc.active { color: rgba(255,255,255,0.6); }
+
+        .school-badge {
+            position: relative;
+            z-index: 1;
+            margin-top: 32px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .school-badge-label { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+        .school-badge-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+        .school-badge-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+        .trial-badge {
+            position: relative;
+            z-index: 1;
+            margin-top: 12px;
+            background: rgba(232,160,33,0.1);
+            border: 1px solid rgba(232,160,33,0.2);
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trial-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+        .trial-badge-text { font-size: 12px; color: rgba(255,255,255,0.7); }
+        .trial-badge-text strong { color: var(--gold); }
+
+        .right-panel {
+            position: relative;
+            padding: 40px 48px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .right-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, #d0d5e0 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .right-content { position: relative; z-index: 1; }
+
+        .form-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+        .form-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+        .form-subtitle { font-size: 13px; color: #888; margin-bottom: 28px; line-height: 1.6; }
+
+        .alert-error { background: #fff5f5; color: #c53030; border: 1px solid #fed7d7; border-radius: 10px; padding: 10px 14px; font-size: 12px; margin-bottom: 16px; }
+
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .field-group { margin-bottom: 16px; }
+        .field-label { display: block; font-size: 11px; font-weight: 600; color: var(--navy); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+        .field-input { width: 100%; padding: 11px 14px; border: 1.5px solid #e2e4ea; border-radius: 10px; font-size: 13.5px; font-family: 'DM Sans', sans-serif; color: var(--navy); background: #fff; transition: all 0.2s; outline: none; }
+        .field-input::placeholder { color: #bbb; }
+        .field-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(26,41,70,0.06); }
+        textarea.field-input { resize: vertical; min-height: 80px; }
+        .field-error { font-size: 11px; color: #e53e3e; margin-top: 4px; }
+
+        .submit-btn { width: 100%; padding: 13px; background: var(--navy); color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; }
+        .submit-btn:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,41,70,0.2); }
+    </style>
+</head>
+<body>
+
+<div class="registration-card">
+    <div class="left-panel">
+        <div class="brand">
+            <img src="{% static 'images/logo.png' %}" alt="Ilimi">
+            <div class="brand-name">Ilimi</div>
+        </div>
+
+        <div class="steps">
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon done">
+                        <svg fill="none" stroke="rgba(232,160,33,0.9)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title done">Your Details</div>
+                    <div class="step-desc done">Tell us about yourself.</div>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon done">
+                        <svg fill="none" stroke="rgba(232,160,33,0.9)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title done">School Info</div>
+                    <div class="step-desc done">About your school.</div>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon done">
+                        <svg fill="none" stroke="rgba(232,160,33,0.9)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title done">Verify Phone</div>
+                    <div class="step-desc done">Confirm your number.</div>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon active">
+                        <svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    </div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title active">Branch Setup</div>
+                    <div class="step-desc active">Your first campus.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="school-badge">
+            <div class="school-badge-label">Setting up</div>
+            <div class="school-badge-name">{{ school.name }}</div>
+            <div class="school-badge-sub">{{ school.city }}, {{ school.country }}</div>
+        </div>
+
+        <div class="trial-badge">
+            <div class="trial-badge-dot"></div>
+            <div class="trial-badge-text"><strong>30-day free trial</strong> starts now</div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="right-content">
+            <div class="form-eyebrow">Step 4 of 4</div>
+            <h2 class="form-title">Set up your first branch</h2>
+            <p class="form-subtitle">Every school needs at least one campus. You can add more branches later from your dashboard.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-error">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">Branch Name</label>
+                        <input type="text" name="branch_name" class="field-input"
+                            placeholder="e.g. Main Campus"
+                            value="{{ form.branch_name.value|default:'Main Campus' }}">
+                        {% if form.branch_name.errors %}<p class="field-error">{{ form.branch_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Branch Code</label>
+                        <input type="text" name="branch_code" class="field-input"
+                            placeholder="e.g. MAIN"
+                            value="{{ form.branch_code.value|default:'MAIN' }}">
+                        {% if form.branch_code.errors %}<p class="field-error">{{ form.branch_code.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Branch Address</label>
+                    <textarea name="address" class="field-input"
+                        placeholder="Full address of this branch">{{ form.address.value|default:'' }}</textarea>
+                    {% if form.address.errors %}<p class="field-error">{{ form.address.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">City</label>
+                        <input type="text" name="city" class="field-input"
+                            placeholder="e.g. Accra"
+                            value="{{ form.city.value|default:'' }}">
+                        {% if form.city.errors %}<p class="field-error">{{ form.city.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Branch Phone <span style="color:#bbb;font-weight:400;">(Optional)</span></label>
+                        <input type="tel" name="phone" class="field-input"
+                            placeholder="Branch phone"
+                            value="{{ form.phone.value|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Branch Email <span style="color:#bbb;font-weight:400;">(Optional)</span></label>
+                    <input type="email" name="email" class="field-input"
+                        placeholder="branch@school.com"
+                        value="{{ form.email.value|default:'' }}">
+                </div>
+
+                <button type="submit" class="submit-btn">Complete Setup →</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

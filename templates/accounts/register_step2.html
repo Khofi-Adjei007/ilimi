@@ -1,0 +1,482 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Info — Ilimi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+        :root {
+            --navy: #1a2946;
+            --navy-light: #2e4a72;
+            --gold: #e8a021;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #eef0f4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+        }
+
+        .registration-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(26,41,70,0.12);
+            width: 100%;
+            max-width: 1000px;
+            min-height: 620px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            background: var(--navy);
+            padding: 36px 32px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -80px; right: -80px;
+            width: 240px; height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(232,160,33,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 40px;
+        }
+
+        .brand img { width: 38px; height: 38px; object-fit: contain; }
+
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .steps { position: relative; z-index: 1; flex: 1; }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 6px;
+        }
+
+        .step-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .step-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-icon.done { background: rgba(232,160,33,0.2); }
+        .step-icon.active { background: var(--gold); }
+        .step-icon.pending { background: rgba(255,255,255,0.07); }
+        .step-icon svg { width: 16px; height: 16px; }
+
+        .step-line {
+            width: 1.5px;
+            height: 28px;
+            background: rgba(255,255,255,0.08);
+            margin: 4px 0;
+        }
+
+        .step-text { padding-top: 6px; }
+
+        .step-title { font-size: 13px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
+        .step-title.done { color: rgba(255,255,255,0.5); }
+        .step-title.active { color: #fff; }
+        .step-title.pending { color: rgba(255,255,255,0.25); }
+
+        .step-desc { font-size: 11px; line-height: 1.4; }
+        .step-desc.done { color: rgba(255,255,255,0.3); }
+        .step-desc.active { color: rgba(255,255,255,0.6); }
+        .step-desc.pending { color: rgba(255,255,255,0.15); }
+
+        .testimonials { position: relative; z-index: 1; margin-top: 32px; }
+
+        .promo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+
+        .promo-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+
+        .testimonial-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+        .testimonial-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .testimonial-author { display: flex; align-items: center; gap: 8px; }
+
+        .testimonial-avatar {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: var(--gold);
+            color: var(--navy);
+            font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .testimonial-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); }
+        .stars { color: var(--gold); font-size: 11px; letter-spacing: 1px; }
+        .testimonial-text { font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.5; font-style: italic; }
+
+        .right-panel {
+            position: relative;
+            padding: 40px 48px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .right-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, #d0d5e0 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .right-content { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #999;
+            text-decoration: none;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: var(--navy); }
+
+        .form-eyebrow {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .form-subtitle { font-size: 13px; color: #888; margin-bottom: 28px; }
+
+        .alert-error {
+            background: #fff5f5;
+            color: #c53030;
+            border: 1px solid #fed7d7;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .field-group { margin-bottom: 16px; }
+
+        .field-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--navy);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e2e4ea;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--navy);
+            background: #fff;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .field-input::placeholder { color: #bbb; }
+        .field-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(26,41,70,0.06); }
+        .field-error { font-size: 11px; color: #e53e3e; margin-top: 4px; }
+
+        .logo-upload {
+            border: 2px dashed #e2e4ea;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafaf8;
+        }
+
+        .logo-upload:hover { border-color: var(--navy); background: #fff; }
+
+        .logo-upload input { display: none; }
+
+        .logo-upload-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .logo-upload-text span { color: var(--gold); font-weight: 600; cursor: pointer; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: var(--navy-light);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26,41,70,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="registration-card">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="brand">
+            <img src="{% static 'images/logo.png' %}" alt="Ilimi">
+            <div class="brand-name">Ilimi</div>
+        </div>
+
+        <div class="steps">
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon done">
+                        <svg fill="none" stroke="rgba(232,160,33,0.9)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title done">Your Details</div>
+                    <div class="step-desc done">Tell us about yourself.</div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon active">
+                        <svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title active">School Info</div>
+                    <div class="step-desc active">About your school.</div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon pending">
+                        <svg fill="none" stroke="rgba(255,255,255,0.3)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2v-1a7 7 0 00-14 0v1a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div class="step-line"></div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title pending">Verify Phone</div>
+                    <div class="step-desc pending">Confirm your number.</div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon pending">
+                        <svg fill="none" stroke="rgba(255,255,255,0.3)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    </div>
+                </div>
+                <div class="step-text">
+                    <div class="step-title pending">Branch Setup</div>
+                    <div class="step-desc pending">Your first campus.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="testimonials">
+            <div class="promo-text">30 days free.<br>No credit card.</div>
+            <div class="promo-sub">Start your trial today.</div>
+            <div class="testimonial-card">
+                <div class="testimonial-top">
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">AK</div>
+                        <div class="testimonial-name">Ama Kyei</div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                </div>
+                <div class="testimonial-text">"Ilimi transformed how we manage our 3 branches. Fee collection is now seamless."</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-top">
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">KO</div>
+                        <div class="testimonial-name">Kwame Osei</div>
+                    </div>
+                    <div class="stars">★★★★★</div>
+                </div>
+                <div class="testimonial-text">"Parents love the SMS updates. Attendance tracking saves us hours every week."</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <div class="right-content">
+            <a href="{% url 'accounts:register_step1' %}" class="back-link">
+                ← Go Back
+            </a>
+
+            <div class="form-eyebrow">Step 2 of 4</div>
+            <h2 class="form-title">Tell us about your school</h2>
+            <p class="form-subtitle">This sets up your school's profile on Ilimi.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-error">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="field-group">
+                    <label class="field-label">School Name</label>
+                    <input type="text" name="school_name" class="field-input"
+                        placeholder="e.g. Future People Academy"
+                        value="{{ form.school_name.value|default:'' }}">
+                    {% if form.school_name.errors %}<p class="field-error">{{ form.school_name.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">School Email</label>
+                        <input type="email" name="school_email" class="field-input"
+                            placeholder="school@email.com"
+                            value="{{ form.school_email.value|default:'' }}">
+                        {% if form.school_email.errors %}<p class="field-error">{{ form.school_email.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">School Phone</label>
+                        <input type="tel" name="school_phone" class="field-input"
+                            placeholder="030 000 0000"
+                            value="{{ form.school_phone.value|default:'' }}">
+                        {% if form.school_phone.errors %}<p class="field-error">{{ form.school_phone.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="field-label">City</label>
+                        <input type="text" name="city" class="field-input"
+                            placeholder="e.g. Accra"
+                            value="{{ form.city.value|default:'' }}">
+                        {% if form.city.errors %}<p class="field-error">{{ form.city.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Country</label>
+                        <input type="text" name="country" class="field-input"
+                            placeholder="Ghana"
+                            value="{{ form.country.value|default:'Ghana' }}">
+                        {% if form.country.errors %}<p class="field-error">{{ form.country.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">School Logo <span style="color:#bbb;font-weight:400;">(Optional)</span></label>
+                    <div class="logo-upload" onclick="document.getElementById('logo-input').click()">
+                        <svg width="28" height="28" fill="none" stroke="#ccc" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <input type="file" name="logo" id="logo-input" accept="image/*">
+                        <div class="logo-upload-text">
+                            <span>Click to upload</span> your school logo<br>
+                            PNG, JPG up to 2MB
+                        </div>
+                    </div>
+                    {% if form.logo.errors %}<p class="field-error">{{ form.logo.errors.0 }}</p>{% endif %}
+                </div>
+
+                <button type="submit" class="submit-btn">Continue to Phone Verification →</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

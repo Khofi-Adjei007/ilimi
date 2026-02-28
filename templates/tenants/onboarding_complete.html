@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Ilimi!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+        :root { --navy: #1a2946; --navy-light: #2e4a72; --gold: #e8a021; }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #eef0f4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+        }
+
+        .registration-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(26,41,70,0.12);
+            width: 100%;
+            max-width: 1000px;
+            min-height: 620px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            background: var(--navy);
+            padding: 36px 32px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -80px; right: -80px;
+            width: 240px; height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(232,160,33,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; margin-bottom: 40px; }
+        .brand img { width: 38px; height: 38px; object-fit: contain; }
+        .brand-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #fff; }
+
+        .steps { position: relative; z-index: 1; flex: 1; }
+        .step-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 6px; }
+        .step-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .step-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .step-icon.done { background: rgba(232,160,33,0.2); }
+        .step-icon svg { width: 16px; height: 16px; }
+        .step-line { width: 1.5px; height: 28px; background: rgba(255,255,255,0.08); margin: 4px 0; }
+        .step-text { padding-top: 6px; }
+        .step-title { font-size: 13px; font-weight: 600; line-height: 1; margin-bottom: 4px; color: rgba(255,255,255,0.5); }
+        .step-desc { font-size: 11px; line-height: 1.4; color: rgba(255,255,255,0.3); }
+
+        .complete-badge {
+            position: relative;
+            z-index: 1;
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .complete-badge-icon {
+            width: 64px; height: 64px;
+            border-radius: 18px;
+            background: rgba(232,160,33,0.15);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .complete-badge-icon svg { width: 32px; height: 32px; color: var(--gold); }
+        .complete-badge-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .complete-badge-sub { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; }
+
+        .right-panel {
+            position: relative;
+            padding: 40px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .right-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, #d0d5e0 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .right-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px; height: 80px;
+            border-radius: 24px;
+            background: rgba(72,199,142,0.12);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .success-icon svg { width: 40px; height: 40px; color: #48c78e; }
+
+        .form-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+        .form-subtitle { font-size: 13px; color: #888; line-height: 1.7; margin-bottom: 32px; }
+
+        .action-list { text-align: left; margin-bottom: 32px; }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 1.5px solid #eee;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .action-item:hover { border-color: var(--navy); background: #fafaf8; }
+
+        .action-item-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .action-item-icon svg { width: 18px; height: 18px; }
+
+        .action-item-text { flex: 1; }
+        .action-item-title { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+        .action-item-desc { font-size: 11px; color: #999; }
+
+        .action-item-arrow { color: #ccc; font-size: 16px; }
+
+        .go-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .go-btn:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,41,70,0.2); }
+    </style>
+</head>
+<body>
+
+<div class="registration-card">
+    <div class="left-panel">
+        <div class="brand">
+            <img src="{% static 'images/logo.png' %}" alt="Ilimi">
+            <div class="brand-name">Ilimi</div>
+        </div>
+
+        <div class="steps">
+            {% for label, desc in steps %}
+            <div class="step-item">
+                <div class="step-left">
+                    <div class="step-icon done">
+                        <svg fill="none" stroke="rgba(232,160,33,0.9)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    {% if not forloop.last %}<div class="step-line"></div>{% endif %}
+                </div>
+                <div class="step-text">
+                    <div class="step-title">{{ label }}</div>
+                    <div class="step-desc">{{ desc }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="complete-badge">
+            <div class="complete-badge-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="complete-badge-text">All steps complete!</div>
+            <div class="complete-badge-sub">Your 30-day free trial<br>has started.</div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="right-content">
+            <div class="success-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+
+            <h2 class="form-title">You are all set!</h2>
+            <p class="form-subtitle">
+                Welcome to Ilimi, {{ user.first_name }}. Your school
+                <strong>{{ school.name }}</strong> is ready.
+                Here's what you can do next.
+            </p>
+
+            <div class="action-list">
+                <a href="#" class="action-item">
+                    <div class="action-item-icon" style="background:#eff6ff;">
+                        <svg fill="none" stroke="#3b82f6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </div>
+                    <div class="action-item-text">
+                        <div class="action-item-title">Add your first student</div>
+                        <div class="action-item-desc">Enrol students and set up classes.</div>
+                    </div>
+                    <span class="action-item-arrow">›</span>
+                </a>
+
+                <a href="#" class="action-item">
+                    <div class="action-item-icon" style="background:#f0fdf4;">
+                        <svg fill="none" stroke="#22c55e" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
+                    <div class="action-item-text">
+                        <div class="action-item-title">Set up fee structure</div>
+                        <div class="action-item-desc">Configure fees and payment methods.</div>
+                    </div>
+                    <span class="action-item-arrow">›</span>
+                </a>
+
+                <a href="#" class="action-item">
+                    <div class="action-item-icon" style="background:#fefce8;">
+                        <svg fill="none" stroke="#f59e0b" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                    </div>
+                    <div class="action-item-text">
+                        <div class="action-item-title">Send your first SMS</div>
+                        <div class="action-item-desc">Notify parents about the new platform.</div>
+                    </div>
+                    <span class="action-item-arrow">›</span>
+                </a>
+            </div>
+
+            <a href="{% url 'dashboard:home' %}" class="go-btn">Go to Dashboard →</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
