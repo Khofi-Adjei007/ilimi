@@ -35,6 +35,8 @@ class School(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    onboarding_complete = models.BooleanField(default=False)
+    onboarding_step = models.IntegerField(default=1)
 
     def save(self, *args, **kwargs):
         if not self.slug:
