@@ -113,4 +113,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_full_name(self, obj):
-        return obj.get_full_name()
+        return obj.user.get_full_name()

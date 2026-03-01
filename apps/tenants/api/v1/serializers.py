@@ -119,7 +119,7 @@ class SchoolMemberSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_full_name(self, obj):
-        return obj.user.get_full_name()
+        return obj.user.full_name
 
     def get_branch_name(self, obj):
         return obj.branch.name if obj.branch else None
