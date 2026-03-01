@@ -1,5 +1,6 @@
 import environ
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -42,7 +43,6 @@ LOCAL_APPS = [
     'apps.notifications',
     'apps.reports',
     'apps.dashboard',
-    # ← drf_spectacular removed from here
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -121,98 +121,51 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Django REST Framework
+# ── Django REST Framework ──────────────────────────────────────────────────
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-}
-
-# Paystack
-PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', default='')
-PAYSTACK_SECRET_KEY = env('PAYSTACK_SECRET_KEY', default='')
-
-# SMS
-SMS_API_KEY = env('SMS_API_KEY', default='')
-SMS_SENDER_ID = env('SMS_SENDER_ID', default='Ilimi')
-# REST Framework
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_RENDERER_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
         'apps.core.renderers.IlimiAPIRenderer',
-    ),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    ],
     'EXCEPTION_HANDLER': 'apps.core.exceptions.ilimi_exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# JWT
-from datetime import timedelta
+# ── SimpleJWT ──────────────────────────────────────────────────────────────
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
-}
-
-# API Docs
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'Ilimi API',
-    'DESCRIPTION': 'School Management Platform API for West Africa',
-    'VERSION': 'v1',
-    'SERVE_INCLUDE_SCHEMA': False,
-}
-
-# SMS
-SMS_BACKEND = 'apps.notifications.backends.console.ConsoleSMSBackend'
-
-
-from datetime import timedelta
-
-# ── Django REST Framework ──────────────────────────────────────────────────
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
-    "DEFAULT_RENDERER_CLASSES": [
-        "apps.core.renderers.IlimiAPIRenderer",
-    ],
-    "EXCEPTION_HANDLER": "apps.core.exceptions.ilimi_exception_handler",
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 20,
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-}
-
-# ── SimpleJWT ──────────────────────────────────────────────────────────────
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": True,
-    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 # ── drf-spectacular ────────────────────────────────────────────────────────
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Ilimi School Management API",
-    "DESCRIPTION": "REST API for Ilimi — a multi-tenant SaaS school management platform for Ghana and West Africa.",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
-    "SWAGGER_UI_SETTINGS": {
-        "deepLinking": True,
-        "persistAuthorization": True,
+    'TITLE': 'Ilimi School Management API',
+    'DESCRIPTION': 'REST API for Ilimi — a multi-tenant SaaS school management platform for Ghana and West Africa.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
     },
 }
+
+# ── SMS ────────────────────────────────────────────────────────────────────
+SMS_BACKEND = 'apps.notifications.backends.console.ConsoleSMSBackend'
+SMS_API_KEY = env('SMS_API_KEY', default='')
+SMS_SENDER_ID = env('SMS_SENDER_ID', default='Ilimi')
+
+# ── Paystack ───────────────────────────────────────────────────────────────
+PAYSTACK_PUBLIC_KEY = env('PAYSTACK_PUBLIC_KEY', default='')
+PAYSTACK_SECRET_KEY = env('PAYSTACK_SECRET_KEY', default='')
