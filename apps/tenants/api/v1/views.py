@@ -37,6 +37,7 @@ class SchoolScopedMixin:
 class SchoolMeView(SchoolScopedMixin, GenericAPIView):
     permission_classes = [IsAuthenticated]
     renderer_classes = [IlimiAPIRenderer]
+    serializer_class = SchoolSerializer
 
     def get(self, request, *args, **kwargs):
         school = self.get_school()
@@ -62,6 +63,7 @@ class SchoolMeView(SchoolScopedMixin, GenericAPIView):
 class BranchListCreateView(SchoolScopedMixin, GenericAPIView):
     permission_classes = [IsAuthenticated]
     renderer_classes = [IlimiAPIRenderer]
+    serializer_class = BranchSerializer
 
     def get(self, request, *args, **kwargs):
         school = self.get_school()
@@ -89,6 +91,7 @@ class BranchListCreateView(SchoolScopedMixin, GenericAPIView):
 class BranchDetailView(SchoolScopedMixin, GenericAPIView):
     permission_classes = [IsAuthenticated]
     renderer_classes = [IlimiAPIRenderer]
+    serializer_class = BranchSerializer
 
     def get_branch(self, school, pk):
         try:
@@ -126,6 +129,7 @@ class BranchDetailView(SchoolScopedMixin, GenericAPIView):
 class MemberListInviteView(SchoolScopedMixin, GenericAPIView):
     permission_classes = [IsAuthenticated]
     renderer_classes = [IlimiAPIRenderer]
+    serializer_class = SchoolMemberSerializer
 
     def get(self, request, *args, **kwargs):
         school = self.get_school()

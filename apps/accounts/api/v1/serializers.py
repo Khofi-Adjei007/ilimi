@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from apps.tenants.services.onboarding import create_school_with_owner
 
 User = get_user_model()
 
@@ -38,21 +39,22 @@ class RegisterStep1Serializer(serializers.Serializer):
 
 
 class RegisterStep2Serializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=20)
     school_name = serializers.CharField(max_length=255)
-    school_type = serializers.ChoiceField(
-        choices=[
-            ("primary", "Primary School"),
-            ("jhs", "Junior High School"),
-            ("shs", "Senior High School"),
-            ("tertiary", "Tertiary Institution"),
-            ("other", "Other"),
-        ]
-    )
-    region = serializers.CharField(max_length=100)
+    school_email = serializers.EmailField()
+    school_phone = serializers.CharField(max_length=20)
     city = serializers.CharField(max_length=100)
-    address = serializers.CharField(max_length=500, required=False, allow_blank=True)
-    registration_token = serializers.CharField()
+    country = serializers.CharField(max_length=100, default="Ghana")
+    address = serializers.CharField(max_length=500, required=False, allow_blank=True, default="")
 
+    def validate_phone_number(self, value):
+        value = value.strip().replace(" ", "")
+        if not User.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError("No account found with this phone number.")
+        return value
+
+    def validate_school_email(self, value):
+        return value.lower().strip()
 
 class OTPVerifySerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=20)
@@ -96,8 +98,6 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = [

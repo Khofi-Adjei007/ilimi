@@ -16,6 +16,7 @@ from drf_spectacular.utils import extend_schema
 from apps.core.renderers import IlimiAPIRenderer
 from apps.accounts.services.registration import create_user_account, resend_otp
 from apps.accounts.services.verification import verify_phone_otp
+from apps.tenants.services.onboarding import create_school_with_owner
 
 from .serializers import (
     RegisterStep1Serializer,
@@ -77,12 +78,30 @@ class RegisterStep2View(GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # TODO: wire to onboarding service
-        return Response(
-            {"message": "School details received."},
-            status=status.HTTP_200_OK,
-        )
 
+        data = serializer.validated_data
+
+        user = User.objects.get(phone_number=data["phone_number"])
+
+        school_data = {
+            "school_name": data["school_name"],
+            "school_email": data["school_email"],
+            "school_phone": data["school_phone"],
+            "city": data["city"],
+            "country": data.get("country", "Ghana"),
+            "address": data.get("address", ""),
+        }
+        school = create_school_with_owner(user, school_data)
+
+        return Response(
+            {
+                "message": "School created. Please verify your phone number to continue.",
+                "school_id": school.id,
+                "school_name": school.name,
+                "phone_number": user.phone_number,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 @extend_schema(tags=["Auth"])
 class OTPVerifyView(GenericAPIView):
