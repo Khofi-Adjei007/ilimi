@@ -24,6 +24,9 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_spectacular',
 ]
 
 LOCAL_APPS = [
@@ -39,7 +42,7 @@ LOCAL_APPS = [
     'apps.notifications',
     'apps.reports',
     'apps.dashboard',
-    'drf_spectacular',
+    # ← drf_spectacular removed from here
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -169,3 +172,46 @@ SPECTACULAR_SETTINGS = {
 
 # SMS
 SMS_BACKEND = 'apps.notifications.backends.console.ConsoleSMSBackend'
+
+
+from datetime import timedelta
+
+# ── Django REST Framework ──────────────────────────────────────────────────
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "apps.core.renderers.IlimiAPIRenderer",
+    ],
+    "EXCEPTION_HANDLER": "apps.core.exceptions.ilimi_exception_handler",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# ── SimpleJWT ──────────────────────────────────────────────────────────────
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+# ── drf-spectacular ────────────────────────────────────────────────────────
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Ilimi School Management API",
+    "DESCRIPTION": "REST API for Ilimi — a multi-tenant SaaS school management platform for Ghana and West Africa.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "persistAuthorization": True,
+    },
+}
