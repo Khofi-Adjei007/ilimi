@@ -146,8 +146,14 @@ class MemberListInviteView(SchoolScopedMixin, GenericAPIView):
         )
         serializer.is_valid(raise_exception=True)
 
-        # TODO: wire to invite service
-        return Response(
-            {"message": "Invitation sent successfully."},
-            status=status.HTTP_201_CREATED,
+        from apps.tenants.services.invite import invite_member
+        result = invite_member(
+            school=school,
+            invited_by=request.user,
+            data=serializer.validated_data,
         )
+
+        return Response(
+            {"message": result["message"]},
+            status=status.HTTP_201_CREATED,
+    )

@@ -137,6 +137,19 @@ class SchoolMemberInviteSerializer(serializers.Serializer):
         ]
     )
     branch_id = serializers.IntegerField(required=False, allow_null=True)
+    first_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    phone_number = serializers.CharField(max_length=20, required=False, allow_blank=True)
 
     def validate_email(self, value):
         return value.lower().strip()
+
+    def validate_phone_number(self, value):
+        if not value:
+            return value
+        value = value.strip().replace(" ", "")
+        if not value.startswith("+"):
+            raise serializers.ValidationError(
+                "Phone number must include country code, e.g. +233XXXXXXXXX"
+            )
+        return value
